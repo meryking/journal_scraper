@@ -13,6 +13,8 @@ if st.button("Scrape"):
             headers = {"User-Agent": "Mozilla/5.0"}
             page = requests.get(url)
             soup = BeautifulSoup(page.content, 'html.parser')
+            title = soup.find('div', class_='title')
+            subtitle = soup.find('div', class_='subtitle')
             #find the text under div class ara-body
             text = soup.find('div', class_='ara-body')  
             # Extract all paragraphs within the main content
@@ -20,13 +22,16 @@ if st.button("Scrape"):
                 paragraphs = text.find_all("p")  # Find all <p> tags
                 text = "\n\n".join(p.get_text(strip=True) for p in paragraphs)  # Combine and clean text
                 # print(article_content)
-
-            if text:
                 st.subheader("Scraped Text:")
                 st.text_area("", text, height=300)
             else:
                 st.warning("No text found!")
 
+            if title:
+                st.subheader("Title:")
+                st.write(title.text)
+            else:
+                st.warning("No title found!")
         except Exception as e:
             st.error(f"Error: {str(e)}")
     else:
