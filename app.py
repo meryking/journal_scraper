@@ -20,9 +20,14 @@ if st.button("Scrape"):
     
             #find the text under div class ara-body
             text = soup.find('div', class_='ara-body')  
+
+            #Encuentra todos los spans dentro de 'text' y elimina los que contienen 'place'
+            for span in text.find_all('span', class_='place'):
+                span.decompose()
+
             if title:
                 st.title(title.text)
-            
+                        
             else:
                 st.warning("No title found!")
 
