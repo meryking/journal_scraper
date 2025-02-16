@@ -12,6 +12,25 @@ if st.button("Scrape"):
     if url:
         try:
             headers = {"User-Agent": "Mozilla/5.0"}
+            # Fetch headlines
+            st.sidebar.header("Titulars del dia:")
+            main_page = requests.get("https://www.ara.cat/") # TODO: Change this to the main URL of the website
+            main_soup = BeautifulSoup(main_page.content, 'html.parser')
+
+            divs = main_soup.find_all('div', class_='combo-piece')
+
+            for div in divs:
+                link = div.find('a')  # Find the <a> inside the div
+                if link:
+                    href = link.get('href')
+                    title = link.get('title')
+                    # put the title with a link in the sidebar
+                    st.sidebar.write(title)
+                    st.sidebar.write(href)
+                    # add link
+                    #st.sidebar.markdown(f"[{title}]({link})")
+    
+
             page = requests.get(url)
             soup = BeautifulSoup(page.content, 'html.parser')
             title = soup.find('h1')
