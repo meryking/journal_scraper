@@ -3,6 +3,13 @@ import requests
 from bs4 import BeautifulSoup
 import urllib.parse # Used for constructing absolute URLs and quoting parameters
 
+# Function to be called when a sidebar button is clicked
+def set_article_url(url_to_set):
+    # This updates the state of the main text input
+    st.session_state.user_url_input = url_to_set
+    # Note: st.experimental_rerun() is often not needed inside the callback
+    # as the button click and state change naturally trigger a rerun.
+
 # --- 1. CONFIGURATION ---
 st.title("🔍 ARA Web Scraper")
 st.markdown("---")
@@ -37,17 +44,24 @@ try:
             title = link.get('title')
 
             # Construct the full absolute URL
+            print(href)
+            print(type(href))
             full_href = urllib.parse.urljoin("https://www.ara.cat/", href)
             print(full_href)
+            print(type(full_href))
             
             # Use st.link_button to create a clickable element that changes the URL query parameter.
             # This triggers a full app rerun with the new 'article_url', which is then read in Step 1.
-            st.sidebar.link_button(
+            st.sidebar.button(
                 label=title,
-                url=f"?article_url={urllib.parse.quote(full_href)}", 
-                help=f"Click to scrape: {full_href}"
+                key=f"btn_{count}",
+                help=f"Click to scrape: {full_href}",
+                #on_click=lambda: set_article_url(full_href),  # This function is called when the button is clicked
+                on_click=set_article_url,  # This function is called when the button is clicked
+                args=(href,)
             )
-            print(f"?article_url={urllib.parse.quote(full_href)}")
+
+            print(f"?article_url={full_href}")
             
             count += 1
             if count >= 10: # Limit to 10 headlines
@@ -63,7 +77,7 @@ except Exception as e:
 
 # Automatically run scrape if a URL was passed via the sidebar link (initial_url is not empty)
 # OR if the user manually clicks the 'Scrape' button.
-run_scrape = (initial_url != "") or st.button("Scrape")
+run_scrape = (st.session_state.user_url_input != "") or (initial_url != "") or st.button("Scrape")
 
 if run_scrape:
     # Use the current value from the text input
