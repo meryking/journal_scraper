@@ -44,11 +44,9 @@ try:
             title = link.get('title')
 
             # Construct the full absolute URL
-            print(href)
-            print(type(href))
+            
             full_href = urllib.parse.urljoin("https://www.ara.cat/", href)
-            print(full_href)
-            print(type(full_href))
+            
             
             # Use st.link_button to create a clickable element that changes the URL query parameter.
             # This triggers a full app rerun with the new 'article_url', which is then read in Step 1.
@@ -61,7 +59,7 @@ try:
                 args=(href,)
             )
 
-            print(f"?article_url={full_href}")
+            
             
             count += 1
             if count >= 10: # Limit to 10 headlines
