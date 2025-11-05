@@ -14,7 +14,7 @@ if st.button("Scrape"):
             headers = {"User-Agent": "Mozilla/5.0"}
             # Fetch headlines
             st.sidebar.header("Titulars del dia:")
-            main_page = requests.get("https://www.ara.cat/") # TODO: Change this to the main URL of the website
+            main_page = requests.get("https://www.ara.cat/")
             main_soup = BeautifulSoup(main_page.content, 'html.parser')
 
             divs = main_soup.find_all('div', class_='combo-piece')
