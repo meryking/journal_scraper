@@ -8,29 +8,28 @@ st.title("🔍 Web Scraper App")
 url = st.text_input("Enter a website URL:")
 #url = "https://www.ara.cat/economia/mercats/xina-respon-als-aranzels-trump-taxes-d-10-15_1_5274974.html"
 
+# Fetch headlines
+st.sidebar.header("Titulars del dia:")
+main_page = requests.get("https://www.ara.cat/")
+main_soup = BeautifulSoup(main_page.content, 'html.parser')
+
+divs = main_soup.find_all('div', class_='combo-piece')
+
+for div in divs:
+    link = div.find('a')  # Find the <a> inside the div
+    if link:
+        href = link.get('href')
+        title = link.get('title')
+        # put the title with a link in the sidebar
+        st.sidebar.write(title)
+        st.sidebar.write(href)
+        # add link
+        #st.sidebar.markdown(f"[{title}]({link})")
+
 if st.button("Scrape"):
     if url:
         try:
             headers = {"User-Agent": "Mozilla/5.0"}
-            # Fetch headlines
-            st.sidebar.header("Titulars del dia:")
-            main_page = requests.get("https://www.ara.cat/")
-            main_soup = BeautifulSoup(main_page.content, 'html.parser')
-
-            divs = main_soup.find_all('div', class_='combo-piece')
-
-            for div in divs:
-                link = div.find('a')  # Find the <a> inside the div
-                if link:
-                    href = link.get('href')
-                    title = link.get('title')
-                    # put the title with a link in the sidebar
-                    st.sidebar.write(title)
-                    st.sidebar.write(href)
-                    # add link
-                    #st.sidebar.markdown(f"[{title}]({link})")
-    
-
             page = requests.get(url)
             soup = BeautifulSoup(page.content, 'html.parser')
             title = soup.find('h1')
