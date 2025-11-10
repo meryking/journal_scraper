@@ -87,7 +87,9 @@ if run_scrape:
             title_tag = soup.find('h1')
             subtitle_tag = soup.find('h2')
             text_div = soup.find('div', class_='ara-body')  
-
+            image_meta_tag = soup.find('meta', property='og:image')
+            image_url = image_meta_tag.get('content') if image_meta_tag else "Image URL Not Found"
+            
             if text_div:
                 # Remove specific spans (like 'place') that are often used for interactive or non-text content
                 for span in text_div.find_all('span', class_='place'):
@@ -99,9 +101,9 @@ if run_scrape:
                 
                 if subtitle_tag:
                     st.subheader(subtitle_tag.text)
-                
-                st.markdown(f"**Source URL:** [{current_url}]({current_url})")
-                st.markdown("---")
+                if image_url:
+                    st.image(image_url, caption='Article Image')
+
 
                 # Extract and join all paragraphs within the main content area
                 paragraphs = text_div.find_all("p")
@@ -109,6 +111,8 @@ if run_scrape:
                 
                 if article_content:
                     st.text(article_content)
+                    st.markdown(f"**Source URL:** [{current_url}]({current_url})")
+                    st.markdown("---")
                 else:
                     st.warning("Found main body tag, but no readable paragraphs were extracted.")
             else:
