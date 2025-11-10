@@ -102,7 +102,7 @@ if run_scrape:
                 if subtitle_tag:
                     st.subheader(subtitle_tag.text)
                 if image_url:
-                    st.image(image_url, caption='Article Image')
+                    st.image(image_url)
 
 
                 # Extract and join all paragraphs within the main content area
