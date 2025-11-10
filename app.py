@@ -32,9 +32,22 @@ try:
     
     main_page = requests.get("https://www.ara.cat/", headers=HEADERS, timeout=10)
     main_page.raise_for_status()
-    main_soup = BeautifulSoup(main_page.content, 'html.parser')
+
+    soup = BeautifulSoup(html_doc, 'html.parser')
+    headlines = []
+    article_elements = soup.select('article.article')
+    for article in article_elements:
+        headline_tag = article.find('h2')
+        if headline_tag:
+            headline_text = headline_tag.get_text(strip=True)
+            headlines.append(headline_text)
+    print("🗞️ Titulars trobats:")
+    for h in headlines:
+        print(f"- {h}")
 
     divs = main_soup.find_all('div', class_='combo-piece')
+
+
 
     count = 0
     for div in divs:
