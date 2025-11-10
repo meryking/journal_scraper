@@ -20,7 +20,7 @@ query_params = st.query_params
 initial_url = query_params.get("article_url", [""])[0]
 
 # User input for URL. The 'value' is pre-filled if a query parameter exists.
-url = st.text_input("Enter a valid ARA article URL:", value=initial_url, key="user_url_input")
+url = st.text_input("Enter a valid ARA article URL (or select from sidebar):", value=initial_url, key="user_url_input")
 
 # --- 2. SIDEBAR HEADLINES FETCHING ---
 st.sidebar.header("Today's Headlines:")
