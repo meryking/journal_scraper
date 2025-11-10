@@ -11,7 +11,7 @@ def set_article_url(url_to_set):
     # as the button click and state change naturally trigger a rerun.
 
 # --- 1. CONFIGURATION ---
-st.title("🔍 ARA Web Scraper")
+st.title("🔍 ARA.cat Web Scraper")
 st.markdown("---")
 
 # Get article URL from query parameters (if set by sidebar link) or set a default empty string.
@@ -23,7 +23,7 @@ initial_url = query_params.get("article_url", [""])[0]
 url = st.text_input("Enter a valid ARA article URL:", value=initial_url, key="user_url_input")
 
 # --- 2. SIDEBAR HEADLINES FETCHING ---
-st.sidebar.header("Titulars del dia (ARA):")
+st.sidebar.header("Today's Headlines:")
 st.sidebar.caption("Click a headline to scrape its content.")
 
 try:
