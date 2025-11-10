@@ -33,50 +33,31 @@ try:
     main_page = requests.get("https://www.ara.cat/", headers=HEADERS, timeout=10)
     main_page.raise_for_status()
 
-    soup = BeautifulSoup(html_doc, 'html.parser')
-    headlines = []
-    article_elements = soup.select('article.article')
+    soup = BeautifulSoup(main_page.content, 'html.parser')
+    results = []
+    article_elements = soup.select('article.article, .combo-piece')
+
     for article in article_elements:
+
         headline_tag = article.find('h2')
-        if headline_tag:
-            headline_text = headline_tag.get_text(strip=True)
-            headlines.append(headline_text)
-    print("🗞️ Titulars trobats:")
-    for h in headlines:
-        print(f"- {h}")
+        link_tag = article.find('a', href=True)
 
-    divs = main_soup.find_all('div', class_='combo-piece')
-
-
-
-    count = 0
-    for div in divs:
-        link = div.find('a')  # Find the <a> inside the div
-        if link and link.get('href') and link.get('title'):
-            href = link.get('href')
-            title = link.get('title')
-
+        if link_tag and headline_tag:
+            title = headline_tag.get_text(strip=True)
+            href = link_tag.get('href', 'No Link Found')
+            
             # Construct the full absolute URL
-            
             full_href = urllib.parse.urljoin("https://www.ara.cat/", href)
-            
             
             # Use st.link_button to create a clickable element that changes the URL query parameter.
             # This triggers a full app rerun with the new 'article_url', which is then read in Step 1.
             st.sidebar.button(
                 label=title,
-                key=f"btn_{count}",
                 help=f"Click to scrape: {full_href}",
                 #on_click=lambda: set_article_url(full_href),  # This function is called when the button is clicked
                 on_click=set_article_url,  # This function is called when the button is clicked
                 args=(href,)
             )
-
-            
-            
-            count += 1
-            if count >= 10: # Limit to 10 headlines
-                break
 
 except requests.exceptions.RequestException as e:
     st.sidebar.error(f"Error fetching headlines: {e}")
