@@ -11,7 +11,7 @@ def set_article_url(url_to_set):
     # Note: st.experimental_rerun() is often not needed inside the callback
     # as the button click and state change naturally trigger a rerun.
 
-def display_sidebar_button(article):
+def create_sidebar_button(article):
     headline_tag = article.find('h2')
     link_tag = article.find('a', href=True)
 
@@ -61,7 +61,8 @@ try:
     article_elements = main_soup.select('article.article, .combo-piece')
 
     for article in article_elements:
-        display_sidebar_button(article)
+        # Create a sidebar button for each article
+        create_sidebar_button(article)
 
 except requests.exceptions.RequestException as e:
     st.sidebar.error(f"Error fetching headlines: {e}")
