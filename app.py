@@ -155,5 +155,3 @@ if run_scrape:
             display_warning()
     else:
         st.warning("Please enter a valid URL.")
-        
-
