@@ -23,18 +23,40 @@ def scrape_article(current_url):
 
     return soup
 
-# def extract_params_from_soup(soup):
-#     """
-#     Extracts parameters from the soup object.
+def extract_image_tag(soup):
+    """
+    # TODO: Should it go to processing module?
+    Extracts the image tag from the soup object. Tries .jpg, if not .png.
 
-#     Args:
-#         soup (BeautifulSoup): The soup object containing the article content.
+    Args:
+        soup (BeautifulSoup): The soup object containing the article content.
 
-#     Returns:
-#         tuple: A tuple containing the extracted parameters.
-#     """
-#     title_tag = soup.find('h1')
-#     subtitle_tag = soup.find('h2')
-#     text_div = soup.find('div', class_='ara-body')  
+    Returns:
+        image_tag: The image tag, None if not found.
+    """
+    # Get image
+    image_tag = soup.select_one('picture img[src*=".jpg"]')
+    # Some images are in png format, but only get them if no jpg exists
+    # Enter if statement if original_source_tag is none
+    if not image_tag:
+        image_tag = soup.select_one('picture img[src*=".png"]')
+    
+    return image_tag
 
-#     return title_tag, subtitle_tag, text_div
+def extract_params_from_soup(soup):
+    """
+    Extracts parameters from the soup object.
+
+    Args:
+        soup (BeautifulSoup): The soup object containing the article content.
+
+    Returns:
+        tuple: A tuple containing the extracted parameters.
+    """
+    title_tag = soup.find('h1')
+    subtitle_tag = soup.find('h2')
+    text_div = soup.find('div', class_='ara-body')  
+    image_tag = extract_image_tag(soup)
+    return title_tag, subtitle_tag, text_div, image_tag
+
+

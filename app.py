@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import urllib.parse # Used for constructing absolute URLs and quoting parameters
 
-from scrape import scrape_article
+from scrape import extract_params_from_soup, scrape_article
 
 # Function to be called when a sidebar button is clicked
 def set_article_url(url_to_set):
@@ -89,26 +89,14 @@ if run_scrape:
     
     if current_url:
         try:
-            # Re-use headers from sidebar
-            # page = requests.get(current_url, headers=HEADERS, timeout=15)
-            # page.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
-            
-            # soup = BeautifulSoup(page.content, 'html.parser')
+            # Extract soup from current url
             soup = scrape_article(current_url)
             
             # --- EXTRACT TITLE/SUBTITLE/BODY ---
-            title_tag = soup.find('h1')
-            subtitle_tag = soup.find('h2')
-            text_div = soup.find('div', class_='ara-body')  
-            # Get image
-            original_source_tag = soup.select_one('picture img[src*=".jpg"]')
-            # Some images are in png format, but only get them if no jpg exists
-            # Enter if statement if original_source_tag is none
-            if not original_source_tag:
-                original_source_tag = soup.select_one('picture img[src*=".png"]')
-
-            image_url = original_source_tag.get("src") if original_source_tag else None
-            image_caption = original_source_tag.get("alt") if original_source_tag else None
+            title_tag, subtitle_tag, text_div, image_tag = extract_params_from_soup(soup)
+  
+            image_url = image_tag.get("src") if image_tag else None
+            image_caption = image_tag.get("alt") if image_tag else None
             
             if text_div:
                 # Remove specific spans (like 'place') that are often used for interactive or non-text content
@@ -122,12 +110,10 @@ if run_scrape:
                 # Display Header information
                 if title_tag:
                     st.header(title_tag.text)
-                
                 if subtitle_tag:
                     st.subheader(subtitle_tag.text)
                 if image_url:
-                    st.image(image_url)#, caption=image_caption)  
-
+                    st.image(image_url, caption=image_caption)  
                 if article_content:
                     st.text(article_content)
                     st.markdown(f"**Source URL:** [{current_url}]({current_url})")
