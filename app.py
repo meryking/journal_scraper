@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-from bs4 import BeautifulSoup
 import urllib.parse # Used for constructing absolute URLs and quoting parameters
 
 from scrape import extract_params_from_soup, scrape_article
@@ -11,6 +10,23 @@ def set_article_url(url_to_set):
     st.session_state.user_url_input = url_to_set
     # Note: st.experimental_rerun() is often not needed inside the callback
     # as the button click and state change naturally trigger a rerun.
+
+def display_sidebar_button(article):
+    headline_tag = article.find('h2')
+    link_tag = article.find('a', href=True)
+
+    if link_tag and headline_tag:
+        title = headline_tag.get_text(strip=True)
+        href = link_tag.get('href', 'No Link Found')
+               
+        # Use st.link_button to create a clickable element that changes the URL query parameter.
+        # This triggers a full app rerun with the new 'article_url', which is then read in Step 1.
+        st.sidebar.button(
+            label=title,
+            help="Click to scrape",
+            on_click=set_article_url,  # This function is called when the button is clicked
+            args=(href,)
+        )
 
 # Function to print warning
 def display_warning():
@@ -42,30 +58,10 @@ try:
     # Set headers to mimic a normal browser request
     main_url = "https://www.ara.cat"
     main_soup = scrape_article(main_url)
-    results = []
     article_elements = main_soup.select('article.article, .combo-piece')
 
     for article in article_elements:
-
-        headline_tag = article.find('h2')
-        link_tag = article.find('a', href=True)
-
-        if link_tag and headline_tag:
-            title = headline_tag.get_text(strip=True)
-            href = link_tag.get('href', 'No Link Found')
-            
-            # Construct the full absolute URL
-            full_href = urllib.parse.urljoin("https://www.ara.cat/", href)
-            
-            # Use st.link_button to create a clickable element that changes the URL query parameter.
-            # This triggers a full app rerun with the new 'article_url', which is then read in Step 1.
-            st.sidebar.button(
-                label=title,
-                help="Click to scrape",
-                #on_click=lambda: set_article_url(full_href),  # This function is called when the button is clicked
-                on_click=set_article_url,  # This function is called when the button is clicked
-                args=(href,)
-            )
+        display_sidebar_button(article)
 
 except requests.exceptions.RequestException as e:
     st.sidebar.error(f"Error fetching headlines: {e}")
