@@ -6,7 +6,13 @@ from bs4 import BeautifulSoup
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
 
-def scrape_article(current_url):
+# SIDEBAR PART:
+
+
+
+# NEWSPAPER URL PART:
+
+def scrape_article(url):
     """
     Scrape content from a given URL.
 
@@ -16,7 +22,7 @@ def scrape_article(current_url):
     Returns:
         soup: The scraped content of the article.
     """
-    page = requests.get(current_url, headers=HEADERS, timeout=15)
+    page = requests.get(url, headers=HEADERS, timeout=15)
     page.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
 
     soup = BeautifulSoup(page.content, 'html.parser')
