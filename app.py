@@ -40,14 +40,10 @@ st.sidebar.caption("Click a headline to scrape its content.")
 
 try:
     # Set headers to mimic a normal browser request
-    HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
-    
-    main_page = requests.get("https://www.ara.cat/", headers=HEADERS, timeout=10)
-    main_page.raise_for_status()
-
-    soup = BeautifulSoup(main_page.content, 'html.parser')
+    main_url = "https://www.ara.cat"
+    main_soup = scrape_article(main_url)
     results = []
-    article_elements = soup.select('article.article, .combo-piece')
+    article_elements = main_soup.select('article.article, .combo-piece')
 
     for article in article_elements:
 
@@ -65,7 +61,7 @@ try:
             # This triggers a full app rerun with the new 'article_url', which is then read in Step 1.
             st.sidebar.button(
                 label=title,
-                help=f"Click to scrape: {full_href}",
+                help="Click to scrape",
                 #on_click=lambda: set_article_url(full_href),  # This function is called when the button is clicked
                 on_click=set_article_url,  # This function is called when the button is clicked
                 args=(href,)
