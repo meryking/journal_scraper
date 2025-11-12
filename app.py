@@ -97,22 +97,13 @@ if run_scrape:
             title_tag = soup.find('h1')
             subtitle_tag = soup.find('h2')
             text_div = soup.find('div', class_='ara-body')  
-            
-            # This works for normal articles
-            # image_meta_tag = soup.find('meta', property='og:image')
-            # image_url = image_meta_tag.get('content') if image_meta_tag else "Image URL Not Found"
-
-            # This works for cartoon news or some normal articles
-            # get image with soup.select
-            original_source_tag = soup.select_one('picture img[src*=".jpg"]') #, picture img[src*=".png"]')
-            
+            # Get image
+            original_source_tag = soup.select_one('picture img[src*=".jpg"]')
             # Some images are in png format, but only get them if no jpg exists
             # Enter if statement if original_source_tag is none
             if not original_source_tag:
                 original_source_tag = soup.select_one('picture img[src*=".png"]')
 
-            print(f"Title: {title_tag}")
-            print(f"original_source_tag: {original_source_tag}")
             image_url = original_source_tag.get("src") if original_source_tag else None
             image_caption = original_source_tag.get("alt") if original_source_tag else None
             
@@ -120,7 +111,11 @@ if run_scrape:
                 # Remove specific spans (like 'place') that are often used for interactive or non-text content
                 for span in text_div.find_all('span', class_='place'):
                     span.decompose()
-
+                
+                # Extract and join all paragraphs within the main content area
+                paragraphs = text_div.find_all("p")
+                article_content = "\n\n".join(p.get_text(strip=True) for p in paragraphs)
+                
                 # Display Header information
                 if title_tag:
                     st.header(title_tag.text)
@@ -130,11 +125,6 @@ if run_scrape:
                 if image_url:
                     st.image(image_url)#, caption=image_caption)  
 
-
-                # Extract and join all paragraphs within the main content area
-                paragraphs = text_div.find_all("p")
-                article_content = "\n\n".join(p.get_text(strip=True) for p in paragraphs)
-                
                 if article_content:
                     st.text(article_content)
                     st.markdown(f"**Source URL:** [{current_url}]({current_url})")
