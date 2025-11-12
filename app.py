@@ -3,6 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 import urllib.parse # Used for constructing absolute URLs and quoting parameters
 
+from scrape import scrape_article
+
 # Function to be called when a sidebar button is clicked
 def set_article_url(url_to_set):
     # This updates the state of the main text input
@@ -88,10 +90,11 @@ if run_scrape:
     if current_url:
         try:
             # Re-use headers from sidebar
-            page = requests.get(current_url, headers=HEADERS, timeout=15)
-            page.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
+            # page = requests.get(current_url, headers=HEADERS, timeout=15)
+            # page.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
             
-            soup = BeautifulSoup(page.content, 'html.parser')
+            # soup = BeautifulSoup(page.content, 'html.parser')
+            soup = scrape_article(current_url)
             
             # --- EXTRACT TITLE/SUBTITLE/BODY ---
             title_tag = soup.find('h1')
