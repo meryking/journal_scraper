@@ -99,14 +99,22 @@ if run_scrape:
             text_div = soup.find('div', class_='ara-body')  
             
             # This works for normal articles
-            image_meta_tag = soup.find('meta', property='og:image')
-            image_url = image_meta_tag.get('content') if image_meta_tag else "Image URL Not Found"
+            # image_meta_tag = soup.find('meta', property='og:image')
+            # image_url = image_meta_tag.get('content') if image_meta_tag else "Image URL Not Found"
 
             # This works for cartoon news or some normal articles
             # get image with soup.select
-            #original_source_tag = soup.select_one('picture img[src*="source-aspect-ratio_default_0"]')
-            #image_url = original_source_tag.get("src")
-            #image_caption = original_source_tag.get("alt")
+            original_source_tag = soup.select_one('picture img[src*=".jpg"]') #, picture img[src*=".png"]')
+            
+            # Some images are in png format, but only get them if no jpg exists
+            # Enter if statement if original_source_tag is none
+            if not original_source_tag:
+                original_source_tag = soup.select_one('picture img[src*=".png"]')
+
+            print(f"Title: {title_tag}")
+            print(f"original_source_tag: {original_source_tag}")
+            image_url = original_source_tag.get("src") if original_source_tag else None
+            image_caption = original_source_tag.get("alt") if original_source_tag else None
             
             if text_div:
                 # Remove specific spans (like 'place') that are often used for interactive or non-text content
