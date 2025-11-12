@@ -21,7 +21,7 @@ Try accessing it directly: [{current_url}]({current_url}).
 
 
 # --- 1. CONFIGURATION ---
-st.title("🔍 ARA.cat Web Scraper")
+st.title(f"[🔍 ARA.cat Web Scraper](https://arascraper.streamlit.app)")
 st.markdown("---")
 
 # Get article URL from query parameters (if set by sidebar link) or set a default empty string.
