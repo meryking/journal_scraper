@@ -12,10 +12,11 @@ def set_article_url(url_to_set):
 
 # Function to print warning
 def display_warning():
+    """Display error and show current_url"""
     st.warning(
 f"""**Oops! Something went wrong.**
 Could it be that the article is not behind a paywall?\n
-Try accessing it directly [here]({current_url}).
+Try accessing it directly: [{current_url}]({current_url}).
 """)
 
 
