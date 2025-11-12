@@ -131,7 +131,8 @@ if run_scrape:
                     st.text(article_content)
                     st.markdown(f"**Source URL:** [{current_url}]({current_url})")
                     st.markdown("---")
-                else:
+                # Raise warning if there is no image nor article_content
+                if not article_content and not image_url:
                     st.warning("Found main body tag, but no readable paragraphs were extracted.")
             else:
                 display_warning()
