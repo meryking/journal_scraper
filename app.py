@@ -10,6 +10,15 @@ def set_article_url(url_to_set):
     # Note: st.experimental_rerun() is often not needed inside the callback
     # as the button click and state change naturally trigger a rerun.
 
+# Function to print warning
+def display_warning():
+    st.warning(
+f"""**Oops! Something went wrong.**
+Could it be that the article is not behind a paywall?\n
+Try accessing it directly [here]({current_url}).
+""")
+
+
 # --- 1. CONFIGURATION ---
 st.title("🔍 ARA.cat Web Scraper")
 st.markdown("---")
@@ -124,13 +133,17 @@ if run_scrape:
                 else:
                     st.warning("Found main body tag, but no readable paragraphs were extracted.")
             else:
-                st.warning("Could not find the main article body (`div class='ara-body'`). This page structure may have changed or the URL is not a standard ARA article.")
+                display_warning()
 
         except requests.exceptions.HTTPError as errh:
-            st.error(f"HTTP Error: Could not reach the article or the URL is invalid. {errh}")
+            display_warning()
         except requests.exceptions.RequestException as erre:
             st.error(f"An error occurred during request: {erre}")
+            display_warning()
         except Exception as e:
             st.error(f"An unexpected error occurred during scraping: {e}")
+            display_warning()
     else:
         st.warning("Please enter a valid URL.")
+        
+
