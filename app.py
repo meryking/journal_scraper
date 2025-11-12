@@ -1,42 +1,7 @@
 import streamlit as st
 import requests
-import urllib.parse # Used for constructing absolute URLs and quoting parameters
-
 from scrape import extract_params_from_soup, scrape_article
-
-# Function to be called when a sidebar button is clicked
-def set_article_url(url_to_set):
-    # This updates the state of the main text input
-    st.session_state.user_url_input = url_to_set
-    # Note: st.experimental_rerun() is often not needed inside the callback
-    # as the button click and state change naturally trigger a rerun.
-
-def create_sidebar_button(article):
-    headline_tag = article.find('h2')
-    link_tag = article.find('a', href=True)
-
-    if link_tag and headline_tag:
-        title = headline_tag.get_text(strip=True)
-        href = link_tag.get('href', 'No Link Found')
-               
-        # Use st.link_button to create a clickable element that changes the URL query parameter.
-        # This triggers a full app rerun with the new 'article_url', which is then read in Step 1.
-        st.sidebar.button(
-            label=title,
-            help="Click to scrape",
-            on_click=set_article_url,  # This function is called when the button is clicked
-            args=(href,)
-        )
-
-# Function to print warning
-def display_warning():
-    """Display error and show current_url"""
-    st.warning(
-f"""**Oops! Something went wrong.**
-Could it be that the article is not behind a paywall?\n
-Try accessing it directly: [{current_url}]({current_url}).
-""")
-
+from ui_utils import create_sidebar_button, display_warning
 
 # --- 1. CONFIGURATION ---
 st.title(f"[🔍 ARA.cat Web Scraper](https://arascraper.streamlit.app)")
@@ -69,9 +34,7 @@ except requests.exceptions.RequestException as e:
 except Exception as e:
     st.sidebar.error(f"An unexpected error occurred in sidebar: {e}")
 
-
 # --- 3. MAIN SCRAPER LOGIC ---
-
 # Automatically run scrape if a URL was passed via the sidebar link (initial_url is not empty)
 # OR if the user manually clicks the 'Scrape' button.
 run_scrape = (st.session_state.user_url_input != "") or (initial_url != "") or st.button("Scrape")
@@ -100,7 +63,7 @@ if run_scrape:
                 paragraphs = text_div.find_all("p")
                 article_content = "\n\n".join(p.get_text(strip=True) for p in paragraphs)
                 
-                # Display Header information
+                # Display News article information
                 if title_tag:
                     st.header(title_tag.text)
                 if subtitle_tag:
@@ -115,15 +78,15 @@ if run_scrape:
                 if not article_content and not image_url:
                     st.warning("Found main body tag, but no readable paragraphs were extracted.")
             else:
-                display_warning()
+                display_warning(current_url)
 
         except requests.exceptions.HTTPError as errh:
-            display_warning()
+            display_warning(current_url)
         except requests.exceptions.RequestException as erre:
             st.error(f"An error occurred during request: {erre}")
-            display_warning()
+            display_warning(current_url)
         except Exception as e:
             st.error(f"An unexpected error occurred during scraping: {e}")
-            display_warning()
+            display_warning(current_url)
     else:
         st.warning("Please enter a valid URL.")
